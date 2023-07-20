@@ -1,10 +1,34 @@
+<?php 
+
+require 'functions.php';
+
+if( isset($_POST['login']) ) {
+
+    $username = $_POST['username'];
+    $password = mysqli_real_escape_string($conn, $_POST['password']);
+
+    $result = mysqli_query($conn, "SELECT * FROM users WHERE username = '$username'");
+
+    if( mysqli_num_rows($result) > 0 ) {
+        $data = mysqli_fetch_assoc($result);
+        if( password_verify($password, $data['password']) ) {
+            header('Location: index.php');
+            exit;
+        }
+    }
+    $error = true;
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Masuk</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="https://dprd.jabarprov.go.id/assets/img/favicon.png">
 </head>
 <body class="bg-gray-100">
     <div class="flex items-center justify-center min-h-screen">
@@ -13,30 +37,32 @@
                 <h2 class="text-2xl font-bold text-center mb-8">Log In</h2>
                 <form method="POST" action="">
                     <div class="mb-4">
-                        <label class="block mb-2 font-semibold" for="email">Email</label>
-                        <input id="email" type="email"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                            name="email" autocomplete="email" autofocus
-                            placeholder="Enter your email address" required>
+                        <label class="block mb-2 font-semibold" for="username">Username</label>
+                        <input id="username" type="text"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" name="username" autofocus placeholder="Enter your username" required>
                     </div>
                     <div class="mb-6">
                         <label class="block mb-2 font-semibold" for="password">Password</label>
                         <input id="password" type="password"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                            name="password" required autocomplete="current-password" placeholder="Enter your password"
-                            required>
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" name="password" required placeholder="Enter your password" required>
                     </div>
+                    <?php 
+                    
+                    if( isset($error) && $error == true ) {
+                                            echo '<div class="bg-red-100 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-b mb-6" role="alert">
+                                                <p class="font-bold">Username atau Password salah</p>
+                                            </div>';
+                                        }
+                    
+                    ?>
                     <div class="flex items-center justify-between">
                         <button
                             class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:bg-blue-600 transition-colors"
-                            type="submit">Login</button>
-                            <a class="text-sm text-blue-500 hover:text-blue-600"
-                                href="{{ route('password.request') }}">Forgot Password?</a>
+                            type="submit" name="login">Login</button>
                     </div>
                 </form>
             </div>
-            <p class="mt-4 text-center text-md tracking-wide">Belum punya akun?<a class="underline text-blue-500"
-                    href="{{ route('register') }}">Register</a></p>
+            <p class="mt-4 text-center text-md tracking-wide">Belum punya akun?<a class="underline text-blue-500" href="register.php">Register</a></p>
         </div>
     </div>
 </body>
