@@ -1,17 +1,23 @@
 <?php 
+session_start();
+require '../../functions/functions.php';
 
-require 'functions.php';
+if (isset($_SESSION['login'])) {
+    header('Location: index.php');
+    exit;
+}
 
 if( isset($_POST['login']) ) {
 
     $username = $_POST['username'];
-    $password = mysqli_real_escape_string($conn, $_POST['password']);
+    $password = $_POST['password'];
 
     $result = mysqli_query($conn, "SELECT * FROM users WHERE username = '$username'");
 
     if( mysqli_num_rows($result) > 0 ) {
         $data = mysqli_fetch_assoc($result);
-        if( password_verify($password, $data['password']) ) {
+        if(password_verify($password, $data['password'])) {
+            $_SESSION["login"] = $username;
             header('Location: index.php');
             exit;
         }
