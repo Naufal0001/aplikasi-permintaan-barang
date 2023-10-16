@@ -1,6 +1,5 @@
 <?php 
-
-$conn = mysqli_connect('localhost', 'root', '', 'permintaan_barang');
+date_default_timezone_set('Asia/Jakarta');
 
 function register() {
     global $conn;
@@ -8,22 +7,11 @@ function register() {
     $nama = stripslashes($_POST['nama']);
     $username = strtolower(stripslashes($_POST['username']));
     $password = $_POST['password'];
-    $password2 = mysqli_real_escape_string($conn, $_POST['confirm-password']);
+    $level = $_POST["level"];
 
-    $result = mysqli_query($conn, "SELECT * FROM users WHERE `username` = '$username'");
-    if( mysqli_fetch_assoc($result) ) {
-        echo "<script>alert('Username sudah digunakan');</script>";
-        return false;
-    }
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    if( $password !== $password2 ) {
-        echo '<script>alert("Password tidak sama");</script>';
-        return false;
-    }
-
-    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-
-    mysqli_query($conn, "INSERT INTO users (`nama`, `username`, `password`) VALUES ('$nama', '$username', '$hashed_password')");
+    mysqli_query($conn, "INSERT INTO users (`nama`, `username`, `password`, `level`) VALUES ('$nama', '$username', '$hashed_password', '$level')");
 
     return mysqli_affected_rows($conn);
 
@@ -32,37 +20,42 @@ function register() {
 function create($data) {
     global $conn;
 
-    date_default_timezone_set('Asia/Jakarta');
 
     $barang = htmlspecialchars($data["nama_barang"]);
     $volume = htmlspecialchars($data["volume"]);
     $satuan = htmlspecialchars($data["satuan"]);
-    $keterangan = htmlspecialchars($data["keterangan"]);
-    $date = date("Y-m-d H:i:s");
+    $date = date("d-m-Y");
 
-    $query = mysqli_query($conn, "INSERT INTO data_barang (nama_barang, volume, satuan, keterangan, created_at) VALUES ('$barang', '$volume', '$satuan', '$keterangan', '$date')");
+    $query = mysqli_query($conn, "INSERT INTO barang (nama_barang, volume, satuan, tgl_masuk) VALUES ('$barang', '$volume', '$satuan', '$date')");
 
     return mysqli_affected_rows($conn);
 
 }
 
-function delete($id) {
+function deleteBarang($id) {
     global $conn;
 
-    mysqli_query($conn, "DELETE FROM data_barang WHERE id_barang = '$id'");
+    mysqli_query($conn, "DELETE FROM barang WHERE kode_brg = '$id'");
+    return mysqli_affected_rows($conn);
+}
+
+function deleteUser($id) {
+    global $conn;
+
+    mysqli_query($conn, "DELETE FROM users WHERE id = '$id'");
     return mysqli_affected_rows($conn);
 }
 
 function update($data) {
     global $conn;
 
-    $id = $data["id_barang"];
+    $kode_brg = $data["kode_brg"];
     $barang = htmlspecialchars($data["nama_barang"]);
-    $volume = htmlspecialchars($data["volume"]);
     $satuan = htmlspecialchars($data["satuan"]);
-    $keterangan = htmlspecialchars($data["keterangan"]);
+    $volume = htmlspecialchars($data["volume"]);
+    $tanggal = htmlspecialchars($data["tgl_masuk"]);
 
-    $query = mysqli_query($conn, "UPDATE data_barang SET nama_barang = '$barang', volume = '$volume', satuan = '$satuan', keterangan = '$keterangan' WHERE id_barang = $id");
+    $query = mysqli_query($conn, "UPDATE barang SET nama_barang = '$barang', volume = '$volume', satuan = '$satuan', tgl_masuk = '$tanggal' WHERE kode_brg = $kode_brg");
 
     return mysqli_affected_rows($conn);
 }
@@ -76,6 +69,59 @@ function query($query) {
         $rows[] = $row;
     }
     return $rows;
+}
+
+function indoDate($date)
+{
+    $exp = explode("-", substr($date,0,10));
+    return $exp[2] . ' ' . month($exp[1]) . ' ' . $exp[0];
+}
+
+/**
+ * Fungsi untuk mengkonversi format bulan angka menjadi nama bulan.
+ */
+function month($kode)
+{
+    $month = '';
+    switch ($kode) {
+        case '01':
+            $month = 'Januari';
+            break;
+        case '02':
+            $month = 'Februari';
+            break;
+        case '03':
+            $month = 'Maret';
+            break;
+        case '04':
+            $month = 'April';
+            break;
+        case '05':
+            $month = 'Mei';
+            break;
+        case '06':
+            $month = 'Juni';
+            break;
+        case '07':
+            $month = 'Juli';
+            break;
+        case '08':
+            $month = 'Agustus';
+            break;
+        case '09':
+            $month = 'September';
+            break;
+        case '10':
+            $month = 'Oktober';
+            break;
+        case '11':
+            $month = 'November';
+            break;
+        case '12':
+            $month = 'Desember';
+            break;
+    }
+    return $month;
 }
 
 ?>
