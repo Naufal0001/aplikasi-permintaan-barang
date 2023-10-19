@@ -68,9 +68,8 @@ if (isset($_POST["submit"])) {
                                 <div class="grid sm:grid-cols-3 sm:col-span-2 items-center mb-2 sm:mb-0">
                                     <label for="level" class="block mb-2 font-semibold sm:text-end">Level</label>
                                     <select id="level" name="level" class="text-black w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-blue-500 sm:ml-10">
-                                        <option selected hidden>Pilih Level</option>
-                                        <option value="admin">Admin</option>
-                                        <option value="pegawai">Pegawai</option>
+                                        <option <?php if ($data['level'] == "admin") echo "selected"; ?> value="admin">Admin</option>
+                                        <option <?php if ($data['level'] == "pegawai") echo "selected"; ?> value="pegawai">Pegawai</option>
                                     </select>
                                 </div>
                                 <div class="flex gap-4 sm:justify-self-end">
