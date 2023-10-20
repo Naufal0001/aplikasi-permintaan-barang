@@ -3,10 +3,13 @@ session_start();
 require '../../../functions/functions.php';
 require '../../../functions/connection.php';
 
-// if (isset($_SESSION['login'])) {
-//     header('Location: index.php');
-//     exit;
-// }
+if (!isset($_SESSION["login"])) {
+    header("Location: login.php");
+    exit;
+} elseif ($_SESSION["level"] == "pegawai") {
+    header("Location:../pegawai/index.php");
+    exit;
+}
 
 if (isset($_POST["register"])) {
     if (register($_POST) > 0) {

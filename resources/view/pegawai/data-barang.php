@@ -6,6 +6,9 @@ require '../../../functions/connection.php';
 if (!isset($_SESSION["login"])) {
     header("Location: login.php");
     exit;
+} elseif ($_SESSION["level"] == "admin") {
+    header("Location:../admin/index.php");
+    exit;
 }
 
 ?>

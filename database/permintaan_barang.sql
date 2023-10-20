@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 16 Okt 2023 pada 14.23
+-- Waktu pembuatan: 20 Okt 2023 pada 05.07
 -- Versi server: 10.4.27-MariaDB
 -- Versi PHP: 8.2.0
 
@@ -43,7 +43,7 @@ CREATE TABLE `barang` (
 
 INSERT INTO `barang` (`kode_brg`, `nama_barang`, `volume`, `keluar`, `sisa`, `satuan`, `tgl_masuk`) VALUES
 ('AK001', 'Kabel LAN', 100, 10, 90, 'Meter', '2023-10-16'),
-('AK002', 'Terminal', 10, 5, 5, 'Buah', '2023-10-16'),
+('AK002', 'Terminal', 20, 5, 15, 'Buah', '2023-10-16'),
 ('AK003', 'Pulpen', 50, 0, 50, 'Buah', '2023-10-16'),
 ('AK004', 'Buku', 50, 0, 50, 'Buah', '2023-10-16');
 
@@ -92,9 +92,11 @@ DELIMITER ;
 CREATE TABLE `permintaan` (
   `id_permintaan` int(11) NOT NULL,
   `divisi` varchar(50) NOT NULL,
+  `perihal` varchar(100) NOT NULL,
   `kode_brg` varchar(11) NOT NULL,
   `jumlah` int(11) NOT NULL,
   `tgl_permintaan` date NOT NULL,
+  `keterangan` varchar(250) NOT NULL,
   `pengaju` varchar(50) NOT NULL,
   `status` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -103,11 +105,12 @@ CREATE TABLE `permintaan` (
 -- Dumping data untuk tabel `permintaan`
 --
 
-INSERT INTO `permintaan` (`id_permintaan`, `divisi`, `kode_brg`, `jumlah`, `tgl_permintaan`, `pengaju`, `status`) VALUES
-(37, 'divisi1', 'AK002', 5, '2023-10-16', 'Surya', 1),
-(38, 'divisi1', 'AK001', 10, '2023-10-16', 'Asep', 1),
-(39, 'divisi1', 'AK004', 5, '2023-10-16', 'Bayu', 0),
-(40, 'divisi1', 'AK002', 10, '2023-10-16', 'Asep', 0);
+INSERT INTO `permintaan` (`id_permintaan`, `divisi`, `perihal`, `kode_brg`, `jumlah`, `tgl_permintaan`, `keterangan`, `pengaju`, `status`) VALUES
+(37, 'divisi1', '', 'AK002', 5, '2023-10-16', '', 'Surya', 1),
+(38, 'divisi1', '', 'AK001', 10, '2023-10-16', '', 'Asep', 1),
+(39, 'divisi1', '', 'AK004', 5, '2023-10-16', '', 'Bayu', 0),
+(40, 'divisi1', '', 'AK002', 10, '2023-10-16', '', 'Asep', 0),
+(44, 'divisi1', 'Permohonan Terminal', 'AK002', 2, '2023-10-20', 'Ruang Kerja Bapak Mail', 'Surya', 0);
 
 -- --------------------------------------------------------
 
@@ -118,9 +121,11 @@ INSERT INTO `permintaan` (`id_permintaan`, `divisi`, `kode_brg`, `jumlah`, `tgl_
 CREATE TABLE `sementara` (
   `id_sementara` int(11) NOT NULL,
   `divisi` varchar(50) NOT NULL,
+  `perihal` varchar(100) NOT NULL,
   `kode_brg` varchar(11) NOT NULL,
   `jumlah` int(11) NOT NULL,
   `tgl_permintaan` date NOT NULL,
+  `keterangan` varchar(250) NOT NULL,
   `pengaju` varchar(50) NOT NULL,
   `status` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -145,8 +150,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `nama`, `username`, `password`, `level`) VALUES
 (26, 'Rehan', 'admin', '$2y$10$qpYiTxnTQEoeR5R4iJE8qe/DPFiFSerbxpQ98csoBCPrMFt8.NJMm', 'admin'),
-(28, 'Naufal', 'divisi1', '$2y$10$/0OPivQpGQfS0UGmIF9zxOWNHT1t5Wpus6w5BBiqlgNvytY01LOaS', 'pegawai'),
-(29, 'Surya', 'divisi2', '$2y$10$rkBr3Z3ooOu/JyD0I8fHMuzV8fhMEP.UedaHthD76fTHmwWYAg0ri', 'pegawai');
+(28, 'Naufal', 'divisi1', '$2y$10$/0OPivQpGQfS0UGmIF9zxOWNHT1t5Wpus6w5BBiqlgNvytY01LOaS', 'pegawai');
 
 --
 -- Indexes for dumped tables
@@ -196,13 +200,13 @@ ALTER TABLE `pengeluaran`
 -- AUTO_INCREMENT untuk tabel `permintaan`
 --
 ALTER TABLE `permintaan`
-  MODIFY `id_permintaan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id_permintaan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT untuk tabel `sementara`
 --
 ALTER TABLE `sementara`
-  MODIFY `id_sementara` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id_sementara` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT untuk tabel `users`

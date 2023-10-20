@@ -9,7 +9,7 @@ $jumlah = $_GET['jumlah'];
      
 	 
     	$row = mysqli_fetch_assoc($query);
-    	if ($jumlah > $row['volume']){
+    	if ($jumlah > $row['sisa']){
     	$data = array(
 	            'hasil' =>  1,
 	            'pesan' => 'Permintaan Melebihi Persediaan Stok'

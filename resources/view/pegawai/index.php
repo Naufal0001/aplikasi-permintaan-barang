@@ -6,6 +6,9 @@ require '../../../functions/connection.php';
 if (!isset($_SESSION["login"])) {
   header("Location: login.php");
   exit;
+} elseif ($_SESSION["level"] == "admin") {
+  header("Location:../admin/index.php");
+  exit;
 }
 
 ?>
@@ -39,7 +42,22 @@ if (!isset($_SESSION["login"])) {
               <h4 class="font-semibold text-xl uppercase">Data Stok Barang</h4>
             </div>
           </div>
-          <a href="data-user.php" class="flex gap-1 p-1 items-center justify-center bg-blue-300 rounded-b-lg">
+          <a href="data-barang.php" class="flex gap-1 p-1 items-center justify-center bg-blue-300 rounded-b-lg">
+            <h5>Lihat Detail</h5>
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+        <div class="text-black bg-red-200 rounded-lg">
+          <div class="p-4">
+            <div class="text-2xl flex items-center gap-4">
+              <i class="text-red-400 fa-solid fa-envelope"></i>
+              <h2 class="font-semibold">Permintaan</h2>
+            </div>
+            <div class="mt-4">
+              <h4 class="font-semibold text-xl uppercase">Ajukan Permintaan Barang</h4>
+            </div>
+          </div>
+          <a href="tambah-permintaan.php" class="flex gap-1 p-1 items-center justify-center bg-red-300 rounded-b-lg">
             <h5>Lihat Detail</h5>
             <i class="fa-solid fa-arrow-right"></i>
           </a>
@@ -47,14 +65,14 @@ if (!isset($_SESSION["login"])) {
         <div class="text-black bg-green-200 rounded-lg">
           <div class="p-4">
             <div class="text-2xl flex items-center gap-4">
-              <i class="text-green-400 fa-solid fa-envelope"></i>
-              <h2 class="font-semibold">Permintaan</h2>
+              <i class="text-green-400 fa-solid fa-print"></i>
+              <h2 class="font-semibold">Cetak</h2>
             </div>
             <div class="mt-4">
-              <h4 class="font-semibold text-xl uppercase">Ajukan Permintaan Barang</h4>
+              <h4 class="font-semibold text-xl uppercase">Cetak Permintaan Barang</h4>
             </div>
           </div>
-          <a href="data-user.php" class="flex gap-1 p-1 items-center justify-center bg-green-300 rounded-b-lg">
+          <a href="cetak-permintaan.php" class="flex gap-1 p-1 items-center justify-center bg-green-300 rounded-b-lg">
             <h5>Lihat Detail</h5>
             <i class="fa-solid fa-arrow-right"></i>
           </a>

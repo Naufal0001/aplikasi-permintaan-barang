@@ -6,6 +6,9 @@ require '../../../functions/connection.php';
 if (!isset($_SESSION["login"])) {
     header("Location: login.php");
     exit;
+} elseif ($_SESSION["level"] == "pegawai") {
+    header("Location:../pegawai/index.php");
+    exit;
 }
 
 $query = mysqli_query($conn, "SELECT MAX(kode_brg) from barang");

@@ -6,6 +6,9 @@ require '../../../functions/connection.php';
 if (!isset($_SESSION["login"])) {
     header("Location: login.php");
     exit;
+} elseif ($_SESSION["level"] == "admin") {
+    header("Location:../admin/index.php");
+    exit;
 }
 
 ?>
@@ -31,7 +34,7 @@ if (!isset($_SESSION["login"])) {
 
     <div class="p-4 sm:ml-64">
         <div class="p-4 rounded-lg mt-14">
-            <div class="flex sm:flex-row flex-col w-full gap-10">
+            <div class="flex flex-col sm:grid sm:grid-cols-2 w-full gap-10">
                 <div class="w-full">
                     <div class="border text-gray-700 shadow-md rounded-lg">
                         <div class="w-full text-center text-white uppercase text-2xl font-bold bg-gray-700 px-8 py-6 rounded-t-lg">Form Permintaan Barang</div>
@@ -40,6 +43,10 @@ if (!isset($_SESSION["login"])) {
                                 <div class="grid sm:grid-cols-3 sm:col-span-2 items-center mb-6 sm:mb-0">
                                     <label for="divisi" class="block mb-2 font-semibold sm:text-end">Divisi</label>
                                     <input type="text" id="divisi" name="divisi" value="<?= $_SESSION['login'] ?>" class="bg-gray-200 text-black w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-blue-500 sm:ml-10" required readonly>
+                                </div>
+                                <div class="grid sm:grid-cols-3 sm:col-span-2 items-center mb-6 sm:mb-0">
+                                    <label for="Perihal" class="block mb-2 font-semibold sm:text-end">Perihal</label>
+                                    <input type="text" id="Perihal" name="perihal" class="text-black w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-blue-500 sm:ml-10" required>
                                 </div>
                                 <div class="grid sm:grid-cols-3 sm:col-span-2 items-center mb-2 sm:mb-0">
                                     <label for="barang" class="block mb-2 font-semibold sm:text-end">Nama barang</label>
@@ -57,14 +64,18 @@ if (!isset($_SESSION["login"])) {
                                 </div>
                                 <div class="grid sm:grid-cols-3 sm:col-span-2 items-center mb-6 sm:mb-0">
                                     <label for="stok" class="block mb-2 font-semibold sm:text-end">Stok Tersedia</label>
-                                    <input type="number" id="stok" name="volume" class="bg-gray-200 text-black w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-blue-500 cursor-not-allowed sm:ml-10" required disabled>
+                                    <input type="number" id="stok" name="sisa" class="bg-gray-200 text-black w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-blue-500 cursor-not-allowed sm:ml-10" required disabled>
                                 </div>
                                 <div class="grid sm:grid-cols-3 sm:col-span-2 items-center mb-6 sm:mb-0">
                                     <label for="jumlah" class="block mb-2 font-semibold sm:text-end">Jumlah</label>
                                     <input type="number" id="jumlah" name="jumlah" class="text-black w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-blue-500 sm:ml-10" required onkeyup="sendAjax()">
                                 </div>
                                 <div class="grid sm:grid-cols-3 sm:col-span-2 items-center mb-6 sm:mb-0">
-                                    <label for="nama_pengaju" class="block mb-2 font-semibold sm:text-end">Nama Pengaju</label>
+                                    <label for="keterangan" class="block mb-2 font-semibold sm:text-end">Keterangan</label>
+                                    <textarea id="keterangan" name="keterangan" class="text-black w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-blue-500 sm:ml-10" required></textarea>
+                                </div>
+                                <div class="grid sm:grid-cols-3 sm:col-span-2 items-center mb-6 sm:mb-0">
+                                    <label for="nama_pengaju" class="block mb-2 font-semibold sm:text-end">Nama Pemohon</label>
                                     <input type="text" id="nama_pengaju" name="pengaju" class="text-black w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-blue-500 sm:ml-10" required>
                                 </div>
                                 <div class="flex gap-4 sm:justify-self-end">
@@ -79,49 +90,55 @@ if (!isset($_SESSION["login"])) {
                 <div class="w-full">
                     <div class="border text-gray-700 shadow-md rounded-lg">
                         <div class="w-full text-center text-white uppercase text-2xl font-bold bg-gray-700 px-8 py-6 rounded-t-lg">Data Permintaan Hari ini </div>
-                        <div class="relative overflow-x-auto rounded-lg">
-                            <table class="w-full text-left text-gray-500">
-                                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3">No</th>
-                                        <th class="px-6 py-3">Nama Barang</th>
-                                        <th class="px-6 py-3">Jumlah</th>
-                                        <th class="px-6 py-3">Satuan</th>
-                                        <th class="px-6 py-3">Nama Pengaju</th>
-                                        <th class="px-6 py-3">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    $now = date("Y-m-d");
-                                    $queryTampil = mysqli_query($conn, "SELECT sementara.divisi, sementara.pengaju, sementara.id_sementara, barang.nama_barang, barang.satuan, jumlah FROM sementara INNER JOIN barang ON sementara.kode_brg = barang.kode_brg WHERE tgl_permintaan = '$now' AND sementara.divisi = '$_SESSION[login]'");
-                                    $no = 1;
-                                    if (mysqli_num_rows($queryTampil) > 0) :
-                                        while ($row = mysqli_fetch_assoc($queryTampil)) :
-                                    ?>
-                                            <tr class="bg-white border-b">
-                                                <td class="px-6 py-4"><?= $no; ?></td>
-                                                <td class="px-6 py-4"><?= $row['nama_barang']; ?></td>
-                                                <td class="px-6 py-4"><?= $row['jumlah']; ?></td>
-                                                <td class="px-6 py-4"><?= $row['satuan'] ?></td>
-                                                <td class="px-6 py-4"><?= $row['pengaju'] ?></td>
-                                                <td><a href="deletep.php?id=<?php echo $row['id_sementara']; ?>" class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center cursor-pointer">Hapus</a></td>
-                                            </tr>
-                                        <?php $no++;
-                                        endwhile;
-                                    else : ?>
-                                        <tr class="text-center">
-                                            <td colspan="6" class="text-black text-lg">Tidak ada permintaan barang hari ini</td>
+                        <div class="bg-white relative shadow-md rounded-lg overflow-hidden">
+                            <div class="overflow-x-auto p-2">
+                                <table class="w-full text-left text-gray-500">
+                                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3">No</th>
+                                            <th class="px-6 py-3">Perihal</th>
+                                            <th class="px-6 py-3">Nama Barang</th>
+                                            <th class="px-6 py-3">Jumlah</th>
+                                            <th class="px-6 py-3">Satuan</th>
+                                            <th class="px-6 py-3">Keterangan</th>
+                                            <th class="px-6 py-3">Nama Pemohon</th>
+                                            <th class="px-6 py-3">Aksi</th>
                                         </tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                            <?php if (mysqli_num_rows($queryTampil) > 0) : ?>
-                                <div class="flex p-2">
-                                    <a class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2" href="permintaan-proses.php">Minta Barang</a>
-                                </div>
-                            <?php else : ?>
-                            <?php endif; ?>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $now = date("Y-m-d");
+                                        $queryTampil = mysqli_query($conn, "SELECT sementara.divisi, sementara.pengaju, sementara.id_sementara, barang.nama_barang, barang.satuan, jumlah, perihal, keterangan FROM sementara INNER JOIN barang ON sementara.kode_brg = barang.kode_brg WHERE tgl_permintaan = '$now' AND sementara.divisi = '$_SESSION[login]'");
+                                        $no = 1;
+                                        if (mysqli_num_rows($queryTampil) > 0) :
+                                            while ($row = mysqli_fetch_assoc($queryTampil)) :
+                                        ?>
+                                                <tr class="bg-white border-b">
+                                                    <td class="px-6 py-4"><?= $no; ?></td>
+                                                    <td class="px-6 py-4"><?= $row['perihal'] ?></td>
+                                                    <td class="px-6 py-4"><?= $row['nama_barang'] ?></td>
+                                                    <td class="px-6 py-4"><?= $row['jumlah'] ?></td>
+                                                    <td class="px-6 py-4"><?= $row['satuan'] ?></td>
+                                                    <td class="px-6 py-4"><?= $row['keterangan'] ?></td>
+                                                    <td class="px-6 py-4"><?= $row['pengaju'] ?></td>
+                                                    <td><a href="deletep.php?id=<?php echo $row['id_sementara']; ?>" class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 text-center inline-flex items-center cursor-pointer">Hapus</a></td>
+                                                </tr>
+                                            <?php $no++;
+                                            endwhile;
+                                        else : ?>
+                                            <tr class="text-center">
+                                                <td colspan="8" class="text-black text-lg">Tidak ada permintaan barang hari ini</td>
+                                            </tr>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                                <?php if (mysqli_num_rows($queryTampil) > 0) : ?>
+                                    <div class="flex p-2">
+                                        <a class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-3 py-2 mr-2 mb-2" href="permintaan-proses.php">Minta Barang</a>
+                                    </div>
+                                <?php else : ?>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                 </div>

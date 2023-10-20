@@ -12,7 +12,6 @@ if (isset($_POST['login'])) {
 
     $username = $_POST['username'];
     $password = $_POST['password'];
-    $level = $_POST['level'];
 
     $result = mysqli_query($conn, "SELECT * FROM users WHERE username = '$username'");
 
@@ -20,11 +19,11 @@ if (isset($_POST['login'])) {
         $data = mysqli_fetch_assoc($result);
         $_SESSION["level"] = $data["level"];
         if (password_verify($password, $data['password'])) {
-            if ($data['level'] == "admin" && $level == "admin") {
+            if ($data['level'] == "admin") {
                 $_SESSION['login'] = $data['username'];
                 $_SESSION["level"] = "admin";
                 header("location: admin/index.php");
-            } else if ($data['level'] == "pegawai" && $level == "pegawai") {
+            } else if ($data['level'] == "pegawai") {
                 $_SESSION['login'] = $data['username'];
                 $_SESSION["level"] = "pegawai";
                 header("location: pegawai/index.php");
@@ -62,13 +61,6 @@ if (isset($_POST['login'])) {
                     <div class="mb-6">
                         <label class="block mb-2 font-semibold" for="password">Password</label>
                         <input id="password" type="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" name="password" required placeholder="Enter your password" required>
-                    </div>
-                    <div class="mb-6">
-                        <select id="level" name="level" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                            <option selected hidden>Pilih Level</option>
-                            <option value="admin">Admin</option>
-                            <option value="pegawai">Pegawai</option>
-                        </select>
                     </div>
                     <?php
 

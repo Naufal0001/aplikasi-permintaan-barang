@@ -6,6 +6,9 @@ require '../../../functions/connection.php';
 if (!isset($_SESSION["login"])) {
     header("Location: login.php");
     exit;
+} elseif ($_SESSION["level"] == "admin") {
+    header("Location:../admin/index.php");
+    exit;
 }
 
 if (isset($_GET['aksi']) && isset($_GET['tgl'])) {
@@ -18,7 +21,7 @@ if (isset($_GET['aksi']) && isset($_GET['tgl'])) {
     }
 }
 
-$query = mysqli_query($conn, "SELECT divisi, tgl_permintaan, count(kode_brg) FROM permintaan WHERE divisi = '$_SESSION[login]' AND status = 0 GROUP BY tgl_permintaan");
+$query = mysqli_query($conn, "SELECT divisi, tgl_permintaan, count(kode_brg) FROM permintaan WHERE divisi = '$_SESSION[login]' AND status = 1 GROUP BY tgl_permintaan");
 
 ?>
 <!DOCTYPE html>
@@ -67,7 +70,7 @@ $query = mysqli_query($conn, "SELECT divisi, tgl_permintaan, count(kode_brg) FRO
                                             <td><?= indoDate($row['tgl_permintaan']) ?></td>
                                             <td><?= $row['count(kode_brg)'] ?></td>
                                             <td>
-                                                <a target="_blank" href="cetakpesanan.php?&tgl=<?= $row['tgl_permintaan']; ?>"><span data-placement='top' data-toggle='tooltip' title='Cetak Bukti Permintaan'><button class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-3 py-2.5"><i class="fa fa-print mr-2"></i>Cetak</button></span></a>
+                                                <a target="_blank" href="cetakpesanan.php?&tgl=<?= $row['tgl_permintaan']; ?>&divisi=<?= $row['divisi']; ?>"><span data-placement='top' data-toggle='tooltip' title='Cetak Bukti Permintaan'><button class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-3 py-2.5"><i class="fa fa-print mr-2"></i>Cetak</button></span></a>
                                             </td>
                                         </tr>
                                     <?php $no++;
